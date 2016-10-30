@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">  
+    <string name="aerr_application_lowmem">ที่เก็บข้อมูลของแท็บเล็ตเต็ม แอพพลิเคชั่นหยุดทำงาน โปรดทำให้เนื้อที่ว่างและลองอีกครั้ง</string>  
+    <string name="aerr_process_lowmem">ที่เก็บข้อมูลของแท็บเล็ตเต็ม กระบวนการหยุดทำงาน โปรดทำให้เนื้อที่ว่างและลองอีกครั้ง</string>  
+    <string name="criticallowmessage">เนื้อที่เก็บข้อมูลของอุปกรณ์เต็มแล้ว กรุณาลบไฟล์ที่ไม่ใช้ มิเช่นนั้นแอพพลิเคชั่นอาจออกจากการทำงานอย่างกะทันหัน</string>  
+    <string name="storage_withoutsd">ที่เก็บข้อมูลในแท็บเล็ตมีไม่เพียงพอ โปรดเพิ่มที่ว่างในที่เก็บข้อมูล หรือใส่ SD การ์ด</string>  
+    <string name="storage_withsd">ที่เก็บข้อมูลในแท็บเล็ตมีไม่เพียงพอ โปรดเพิ่มที่ว่างในที่เก็บข้อมูลหรือเปลี่ยนดิสก์ที่ใช้เขียนข้อมูลในการตั้งค่า</string> 
+</resources>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">  
+    <string name="aerr_application_lowmem">Bộ nhớ máy tính bảng đã đầy, ứng dụng đã bị dừng. Hãy làm trống dung lượng và thử lại.</string>  
+    <string name="aerr_process_lowmem">Bộ nhớ máy tính bảng đã đầy, tiến trình đã bị dừng. Hãy làm trống dung lượng và thử lại.</string>  
+    <string name="criticallowmessage">Bộ nhớ thiết bị đầy, hãy xóa bớt các file không dùng, nếu không ứng dụng có thể thoát đột ngột</string>  
+    <string name="storage_withoutsd">Bộ nhớ máy tính bảng không có đủ dung lượng. Vui lòng giải phóng bớt bộ nhớ hoặc lắp thẻ SD.</string>  
+    <string name="storage_withsd">Bộ nhớ máy tính bảng không có đủ dung lượng. Vui lòng giải phóng bớt bộ nhớ hoặc thay đổi đĩa ghi mặc định trong thiết lập.</string> 
+</resources>

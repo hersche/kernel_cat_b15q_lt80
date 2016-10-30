@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">  
+    <string name="aerr_application_lowmem">Tabletopslag vol; de toepassing is gestopt. Maak ruimte vrij en probeer het opnieuw.</string>  
+    <string name="aerr_process_lowmem">Tabletopslag vol; het proces is gestopt. Maak ruimte vrij en probeer het opnieuw.</string>  
+    <string name="criticallowmessage">De opslag van het toestel is vol. Verwijder overbodige bestanden, anders kan de toepassing onverwacht stoppen</string>  
+    <string name="storage_withoutsd">De tabletopslag heeft niet genoeg ruimte. Maak wat ruimte vrij of plaats een SD-kaart.</string>  
+    <string name="storage_withsd">De tabletopslag heeft niet genoeg ruimte. Maak wat ruimte vrij of verander de standaardschrijfschijf in de instellingen.</string>
+</resources>

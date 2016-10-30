@@ -1,0 +1,158 @@
+#!/bin/bash
+# Author: Goldie_Lin@Compalcomm.com
+# Description: Please see the usage() block.
+
+### Variable definitions
+# Default values
+android_project="lt80" # (cci82_we_lt80_kk|lt80)
+modem_makefile="CCI82_WE_LT80_KK_HSPA.mak" # (CCI82_WE_LT80_KK_GPRS.mak|CCI82_WE_LT80_KK_HSPA.mak)
+modem_build_target="new" # (new|remake)
+modem_image_suffix="_1_wg_n" # "_1_tg_n" for TDD128HSPA, "_1_wg_n" for HSPA, "_1_2g_n" for GPRS
+# Filepath
+modem_rel_path="modem_w"
+mediatek_rel_path="mediatek"
+# Filename
+modem_build_script="mk_modem" # current script
+
+### Function definitions
+# My custom timestamp string for log
+mytime() {
+  echo "[$(date +%Y-%m-%d,%H:%M:%S)] "
+}
+# User manual
+usage() {
+  cat << _USAGE_
+Description:
+  Build modem and auto-update images to
+  Android/mediatek/custom/common/modem/XXXX.
+Requirement:
+  Run this script in Android root directory.
+Usage:
+  Syntax:
+    ./${modem_build_script} <android_project> <modem_makefile> (new|remake)
+  Example:
+    ./${modem_build_script} ${android_project} "${modem_makefile}" ${modem_build_target}
+  Or use default values in script header if no any argument:
+    ./${modem_build_script}
+_USAGE_
+}
+
+### Script begin
+
+## Check working directory
+if [[ ! -f "Makefile" ]]; then
+  echo "Error: Please run this script in Android root directory."
+  exit 2
+fi
+
+## Check arguments
+if (( "$#" == "0" )); then
+  # Use default values if no any argument
+  echo "Warning: No any argument, default values will be used!"
+elif (( "$#" == "3" )); then
+  # Back to default value if argument is empty string (nullstring)
+  [[ -z "$1" ]] && echo "Warning: Argument 1 is empty, back to default: [${android_project}]"
+  [[ -z "$2" ]] && echo "Warning: Argument 2 is empty, back to default: [${modem_makefile}]"
+  [[ -z "$3" ]] && echo "Warning: Argument 3 is empty, back to default: [${modem_build_target}]"
+  android_project="${1:-$android_project}"
+  modem_makefile="${2:-$modem_makefile}"
+  modem_build_target="${3:-$modem_build_target}"
+  # Exit with failure if some argument is not matched the known pattern
+  if [[ "${android_project}" != "cci82_we_lt80_kk" ]] && \
+     [[ "${android_project}" != "lt80" ]] ; then
+    echo "Error: Unaccepted Android project name: [${android_project}]"
+    echo "Currently accepted Android project names:"
+    echo "'cci82_we_lt80_kk'"
+    echo "'lt80'"
+    exit 3
+  fi
+  if [[ "${modem_makefile}" != "CCI82_WE_LT80_KK_GPRS.mak" ]] && \
+     [[ "${modem_makefile}" != "CCI82_WE_LT80_KK_HSPA.mak" ]]; then
+    echo "Error: Unaccepted modem makefile: [${modem_makefile}]"
+    echo "Currently accepted modem makefiles:"
+    echo "'CCI82_WE_LT80_KK_GPRS.mak'"
+    echo "'CCI82_WE_LT80_KK_HSPA.mak'"
+    exit 4
+  else
+    if   [[ "${modem_makefile}" == "CCI82_WE_LT80_KK_GPRS.mak" ]]; then
+      modem_image_suffix="_1_2g_n"
+    elif [[ "${modem_makefile}" == "CCI82_WE_LT80_KK_HSPA.mak" ]]; then
+      modem_image_suffix="_1_wg_n"
+    else
+      echo "Error: Unaccepted modem makefile for modem image suffix: [${modem_makefile}]"
+      exit 6
+    fi
+  fi
+  if [[ "${modem_build_target}" != "new" ]] && \
+     [[ "${modem_build_target}" != "remake" ]]; then
+    echo "Error: Unaccepted modem build target: [${modem_build_target}]"
+    echo "Currently accepted modem build targets:"
+    echo "'new'"
+    echo "'remake'"
+    exit 5
+  fi
+else
+  usage
+  exit 1
+fi
+
+# [Debug]
+root_dir="${PWD}"
+echo "PWD=[${PWD}]"
+echo "root_dir=[${root_dir}]"
+echo "android_project=[${android_project}]"
+echo "modem_makefile=[${modem_makefile}]"
+echo "modem_build_target=[${modem_build_target}]"
+echo "modem_image_suffix=[${modem_image_suffix}]"
+echo "modem_rel_path=[${modem_rel_path}]"
+echo "mediatek_rel_path=[${mediatek_rel_path}]"
+
+## Build modem
+echo "`mytime`Build modem..."
+pushd "${modem_rel_path}" || exit 1
+echo "PWD=[${PWD}]"
+echo "Build command = [./m '${modem_makefile}' '${modem_build_target}']"
+./m "${modem_makefile}" "${modem_build_target}" || exit 1
+popd || exit 1
+
+## Update modem images in Android
+echo "`mytime`Update modem images in Android..."
+cd "${root_dir}" || exit 1
+modem_build_bin="$(   find "${modem_rel_path}/build" -maxdepth 3 -type d -name 'bin'              | head -1)"
+modem_build_tst_db="$(find "${modem_rel_path}/build" -maxdepth 4 -type d -path '*/tst/*database*' | head -1)"
+android_modem_dirname="$(grep '^CUSTOM_MODEM\>' "${mediatek_rel_path}/config/${android_project}/ProjectConfig.mk" | cut -d'=' -f2- | sed 's/^[[:space:]]\+//;s/[[:space:]]\+$//')"
+android_modem_dirpath="${mediatek_rel_path}/custom/common/modem/${android_modem_dirname}"
+
+# [Debug]
+echo "modem_build_bin=[${modem_build_bin}]"
+echo "modem_build_tst_db=[${modem_build_tst_db}]"
+echo "android_modem_dirname=[${android_modem_dirname}]"
+echo "android_modem_dirpath=[${android_modem_dirpath}]"
+
+# Clean and Copy modem images
+echo "`mytime`Clean and Copy modem images..."
+rm   -rvf "${android_modem_dirpath}"
+mkdir -vp "${android_modem_dirpath}"
+cp -vf "${modem_build_bin}/${modem_makefile}" "${android_modem_dirpath}/modem.mak" || exit 1
+cp -vf "${modem_build_bin}"/*_PCB01_*.bin     "${android_modem_dirpath}/modem.img" || exit 1
+cp -vf "${modem_build_bin}"/*_PCB01_*.elf               "${android_modem_dirpath}" || exit 1
+cp -vf "${modem_build_bin}"/DbgInfo_*                   "${android_modem_dirpath}" || exit 1
+cp -vf "${modem_build_tst_db}"/catcher_filter.bin       "${android_modem_dirpath}" || exit 1
+cp -vf "${modem_build_tst_db}"/BPLGUInfoCustomAppSrcP_* "${android_modem_dirpath}" || exit 1
+
+# Append suffix to modem image filename
+echo "`mytime`Append suffix to modem image filename..."
+cd "${root_dir}" || exit 1
+pushd "${android_modem_dirpath}" || exit 1
+shopt -s extglob  # Enable (set) bash extended glob feature (exclude syntax in pattern matching)
+rename -vf "s/^(.*)(\....)\$/\$1${modem_image_suffix}\$2/" *.???  # have filename extension (3 chars)
+rename -vf "s/^(.*)\$/\$1${modem_image_suffix}/"         !(*.???) # otherwise
+shopt -u extglob  # Disable (unset)
+popd || exit 1
+
+# chmod to 644 to avoid unnecessary file mode changed in git log
+echo "`mytime`chmod to 644..."
+cd "${root_dir}" || exit 1
+pushd "${android_modem_dirpath}" || exit 1
+chmod -v 644 *
+popd || exit 1
