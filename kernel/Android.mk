@@ -40,7 +40,7 @@ endif
 
 #$(info using $(KERNEL_CONFIG_FILE) .... )
 ifeq ($(TARGET_KMODULES),true)
-ALL_PREBUILT += $(TARGET_OUT)/lib/modules/modules.order
+# ALL_PREBUILT += $(TARGET_OUT)/lib/modules/modules.order
 $(BUILT_SYSTEMIMAGE): kernel_modules
 $(TARGET_OUT)/lib/modules/modules.order: kernel_modules
 ifneq ($(ONE_SHOT_MAKEFILE),)
